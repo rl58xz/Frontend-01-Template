@@ -1,4 +1,6 @@
 const EOF = Symbol("EOF");
+const css = require('css');
+
 let currentToken = null;
 let currentAttribute = null;
 let currentTextNode = null;
@@ -6,6 +8,80 @@ let stack = [{
     type:"document",
     children:[]
 }];
+let rules = [];
+
+function match(element,selector){
+    if(element.attributes && element.attributes.length && selector[0] === "#"){
+        for(let k = 0; k < element.attributes.length; k++){
+            if(element.attributes[k].name === "id" && element.attributes[k].value === selector.slice(1)){
+                return true;
+            }
+        }
+    }
+    if(element.attributes && element.attributes.length && selector[0] === "."){
+        for(let k = 0; k < element.attributes.length; k++){
+            if(element.attributes[k].name === "class" && element.attributes[k].value === selector.slice(1)){
+                return true;
+            }
+        }
+    }
+    if(selector === element.tagName){
+        return true;
+    }
+}
+
+function weightcaculate(selectors){
+    var weight = [0,0,0,0];
+    if(!selectors.length) return weight;
+    selectors.forEach((item) => {
+        if(item[0] === "#") weight[1]++;
+        else if(item[0] === ".") weight[2]++;
+        else weight[3]++;
+    });
+    return weight;
+}
+
+function compareweight(w1,w2){
+    if(w1[0] !== w2[0]) return w2[0] > w1[0];
+    if(w1[1] !== w2[1]) return w2[1] > w2[1];
+    if(w1[2] !== w2[2]) return w2[2] > w2[2];
+    if(w1[3] !== w2[3]) return w2[3] > w2[3];
+    return true;
+}
+
+function computeCss(element){
+    var elements = stack.slice().reverse();
+    if(!element.computedStyle){
+        element.computedStyle = {};
+    }
+    for(let rule of rules){
+        let selectors = rule.selectors[0].split(" ").reverse();
+        if(!match(element,selectors[0])){
+            continue;
+        }
+        let i = 1, j = 0;
+        while(i < selectors.length && j < elements.length){
+            if(match(elements[j++],selectors[i])) i++;
+        }
+        if(i >= selectors.length){
+            var weight = weightcaculate(selectors);
+            var computedStyle = element.computedStyle;
+            for(let declaration of rule.declarations){
+                if(!computedStyle[declaration.property]){
+                    computedStyle[declaration.property] = {};
+                }
+                if(!computedStyle[declaration.property].specificity){
+                    computedStyle[declaration.property].specificity = weight;
+                    computedStyle[declaration.property].value = declaration.value;
+                }else if(compareweight(computedStyle[declaration.property].specificity,weight)){
+                    computedStyle[declaration.property].specificity = weight;
+                    computedStyle[declaration.property].value = declaration.value;
+                }
+            }
+        }
+    }
+    console.log(element.computedStyle);
+}
 
 function emit(token){
     let top = stack[stack.length-1];
@@ -29,6 +105,8 @@ function emit(token){
             }
         }
 
+        computeCss(element);
+
         top.children.push(element);
 
         //element.parent = top;
@@ -42,6 +120,9 @@ function emit(token){
         if(token.tagName != top.tagName){
             throw new Error("aaa");
         }else {
+            if(token.tagName === "style"){
+                addCssRules(top.children[0].content);
+            }
             stack.pop();
         }
         currentTextNode = null;
@@ -53,8 +134,14 @@ function emit(token){
             }
             top.children.push(currentTextNode);
         }
-        currentTextNode += token.content;
+        currentTextNode.content += token.content;
     }
+}
+
+function addCssRules(stylecontent){
+    let cssrules = css.parse(stylecontent);
+    rules.push(...cssrules.stylesheet.rules);
+    //console.log(JSON.stringify(rules,null,4));
 }
 
 function data(c){
@@ -252,6 +339,6 @@ module.exports.parseHTML = function parseHTML(html){
         state = state(c);
     }
     state = state(EOF);
-    console.log(JSON.stringify(stack));
+    //console.log(JSON.stringify(stack,null,4));
     return stack[0];
 }
