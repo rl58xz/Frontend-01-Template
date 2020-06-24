@@ -1,0 +1,26 @@
+<div style="display:flex; justify-content:center">
+    <div id="red" style="height:50px;width:50px;background-color: gray;"></div>
+    <div id="green" style="height:50px;width:50px;background-color: gray;"></div>
+    <div id="yellow" style="height:50px;width:50px;background-color: yellow;"></div>
+</div>
+<script>
+    function start(){
+        setTimeout(function(){
+            document.getElementById("green").setAttribute("style","height:50px;width:50px;background-color: gray");
+            document.getElementById("yellow").setAttribute("style","height:50px;width:50px;background-color: gray");
+            document.getElementById("red").setAttribute("style","height:50px;width:50px;background-color: red");
+        },2000);
+        setTimeout(function(){
+            document.getElementById("red").setAttribute("style","height:50px;width:50px;background-color: gray");
+            document.getElementById("yellow").setAttribute("style","height:50px;width:50px;background-color: gray");
+            document.getElementById("green").setAttribute("style","height:50px;width:50px;background-color: green");
+        },5000);
+        setTimeout(function(){
+            document.getElementById("red").setAttribute("style","height:50px;width:50px;background-color: gray");
+            document.getElementById("green").setAttribute("style","height:50px;width:50px;background-color: gray");
+            document.getElementById("yellow").setAttribute("style","height:50px;width:50px;background-color: yellow");
+        },10000);
+        start();
+    }
+    start();
+</script>

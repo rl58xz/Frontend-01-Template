@@ -1,0 +1,82 @@
+<style>
+    div {
+        background-color: gray;
+        display: inline-block;
+        margin: 30px;
+        border-radius: 50px;
+        width: 100px;
+        height: 100px;
+    }
+
+    .green.light {
+        background-color: green;
+    }
+
+    .red.light {
+        background-color: red;
+    }
+
+    .yellow.light {
+        background-color: yellow;
+    }
+</style>
+
+<div class="green"></div>
+<div class="yellow"></div>
+<div class="red"></div>
+
+<script>
+    function red() {
+        var lights = document.getElementsByTagName("div");
+        for (var i = 0; i < 3; i++) {
+            lights[i].classList.remove("light");
+        }
+        document.getElementsByClassName('red')[0].classList.add("light");
+    }
+
+    function green() {
+        var lights = document.getElementsByTagName("div");
+        for (var i = 0; i < 3; i++) {
+            lights[i].classList.remove("light");
+        }
+        document.getElementsByClassName('green')[0].classList.add("light");
+    }
+
+    function yellow() {
+        var lights = document.getElementsByTagName("div");
+        for (var i = 0; i < 3; i++) {
+            lights[i].classList.remove("light");
+        }
+        document.getElementsByClassName('yellow')[0].classList.add("light");
+    }
+
+    // function go(){
+    //     green();
+    //     setTimeout(function (){
+    //         red();
+    //         setTimeout(function (){
+    //             yellow();
+    //             setTimeout(go,2000);
+    //         },5000)
+    //     },10000)
+    // }
+
+    function sleep(t) {
+        return new Promise((resolve, reject) => {
+            setTimeout(resolve, t);
+        });
+    }
+    void function go() {
+        green();
+        sleep(10000).then(function () {
+            yellow();
+            return sleep(200);
+        }).then(function () {
+            red();
+            return sleep(500);
+        }).then(function () {
+            go();
+        })
+    }();
+
+</script>
