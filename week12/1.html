@@ -62,10 +62,14 @@
     }
 
     function AdditiveExpression(source){
+        if(source[0].type === "Number"){
+            MultiplicativeExpression(source);
+            return AdditiveExpression(source);
+        }
         if(source[0].type === 'MultiplicativeExpression'){
             let node = {
                 type: "AdditiveExpression",
-                children: source.shift()
+                children: [source.shift()]
             }
             source.unshift(node);
             return AdditiveExpression(source);
@@ -73,23 +77,37 @@
         if(source[0].type === 'AdditiveExpression' && source.length > 1 && source[1].type === "+"){
             let node = {
                 type: "AdditiveExpression",
-                children: [source.shift(), source.shift(), source.shift()]
+                children: [source.shift(), source.shift()]
             }
+            MultiplicativeExpression(source);
+            node.children.push(source.shift());
             source.unshift(node);
             return AdditiveExpression(source);
         }
         if(source[0].type === 'AdditiveExpression' && source.length > 1 && source[1].type === "-"){
             let node = {
                 type: "AdditiveExpression",
-                children: [source.shift(), source.shift(), source.shift()]
+                children: [source.shift(), source.shift()]
             }
+            MultiplicativeExpression(source);
+            node.children.push(source.shift());
             source.unshift(node);
             return AdditiveExpression(source);
         }
         if(source[0].type === "AdditiveExpression") return source[0];
     }
 
-    function Expression(tokens){}
+    function Expression(source){
+        if(source[0] === "AdditiveExpression" && source[1].type === 'EOF'){
+            let node = {
+                type:"Expression",
+                children:[source.shift(),source.shift()]
+            }
+            source.unshift(node);
+        }
+        AdditiveExpression(source);
+        return Expression(source)
+    }
 
     let source = [];
 
@@ -97,6 +115,5 @@
         if(token.type != "Whitespace" && token.type !== "LineTerminator") source.push(token);
     }
 
-    MultiplicativeExpression(source);
-    console.log(source);
+    console.log(Expression(source));
 </script>
