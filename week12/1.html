@@ -34,7 +34,6 @@
     }
 
     function MultiplicativeExpression(source){
-        console.log(source);
         if(source[0].type === 'Number'){
             let node = {
                 type: "MultiplicativeExpression",
@@ -62,7 +61,33 @@
         if(source[0].type === "MultiplicativeExpression") return source[0];
     }
 
-    function AdditiveExpression(source){}
+    function AdditiveExpression(source){
+        if(source[0].type === 'MultiplicativeExpression'){
+            let node = {
+                type: "AdditiveExpression",
+                children: source.shift()
+            }
+            source.unshift(node);
+            return AdditiveExpression(source);
+        }
+        if(source[0].type === 'AdditiveExpression' && source.length > 1 && source[1].type === "+"){
+            let node = {
+                type: "AdditiveExpression",
+                children: [source.shift(), source.shift(), source.shift()]
+            }
+            source.unshift(node);
+            return AdditiveExpression(source);
+        }
+        if(source[0].type === 'AdditiveExpression' && source.length > 1 && source[1].type === "-"){
+            let node = {
+                type: "AdditiveExpression",
+                children: [source.shift(), source.shift(), source.shift()]
+            }
+            source.unshift(node);
+            return AdditiveExpression(source);
+        }
+        if(source[0].type === "AdditiveExpression") return source[0];
+    }
 
     function Expression(tokens){}
 
@@ -73,4 +98,5 @@
     }
 
     MultiplicativeExpression(source);
+    console.log(source);
 </script>
