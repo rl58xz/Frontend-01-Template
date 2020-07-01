@@ -98,12 +98,13 @@
     }
 
     function Expression(source){
-        if(source[0] === "AdditiveExpression" && source[1].type === 'EOF'){
+        if(source[0].type === "AdditiveExpression" && source[1].type === 'EOF'){
             let node = {
                 type:"Expression",
                 children:[source.shift(),source.shift()]
             }
             source.unshift(node);
+            return node;
         }
         AdditiveExpression(source);
         return Expression(source)
