@@ -1,0 +1,22 @@
+<div>文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字文字</div>
+<div id="dragable" style='background-color:pink; height:100px; width: 100px;'></div>
+<script>
+    var dragable = document.getElementById('dragable');
+
+    document.addEventListener("mousedown",()=>{
+        var over = (e) => {
+            console.log(e.clientX,e.clientY)
+            dragable.style.transform = `translate(${e.clientX}px,${e.clientY}px)`;
+        }
+        var up = () => {
+            document.removeEventListener("mouseup",up);
+            document.removeEventListener("mousemove",over);
+        }
+        document.addEventListener("mousemove",over);
+        document.addEventListener("mouseup", up);
+    })
+
+    document.addEventListener("selectstart",(event) => {
+        event.preventDefault();
+    })
+</script>
