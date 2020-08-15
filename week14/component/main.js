@@ -1,11 +1,15 @@
 // import './foo'
 function create(Cls,arttributes,...children){
     let o;
+
     if(typeof Cls === "string"){
         o = new Wrapper(Cls);
     }else {
-        o = new Cls;
+        o = new Cls({
+            timer:{}
+        });
     }
+
     for(let name in arttributes){
         o.setAttribute(name,arttributes[name]);
     }
@@ -13,10 +17,24 @@ function create(Cls,arttributes,...children){
     console.log(children)
 
     for(let child of children){
+        if(typeof child === "string"){
+            child = new Text(child);
+        }
         o.appendchild(child);
     }
 
     return o;
+}
+
+class Text{
+    constructor(text){
+        this.children = [];
+        this.root = document.createTextNode(text);
+    }
+
+    mountTo(parent){
+        parent.appendchild(this.root);
+    }
 }
 
 class Wrapper{
@@ -39,24 +57,38 @@ class Wrapper{
         this.children.push(child);
     }
 }
-class Div{
-    constructor(){
+
+class MyComponent{
+    constructor(config){
         this.children = [];
-        this.root = document.createElement("div");
+        this.attributes = new Map();
     }
 
     setAttribute(name,value){
-        this.root.setAttribute(name,value);
+        this.attributes.set(name,value);
     }
 
     mountTo(parent){
-        parent.appendchild(this.root);
+        this.slot = <div></div>
+
         for(let child of this.children){
-            child.mountTo(this.root);
+            this.slot.appendchild(child);
         }
+
+        this.render().mountTo(parent);
     }
+
     appendchild(child){
         this.children.push(child);
+    }
+
+    render(){
+        return <article>
+            <h1>{this.attributes.get("title")}</h1>
+            <header>I'm a header</header>
+            {slot}
+            <footer>I'm a header</footer>
+        </article>
     }
 }
 
@@ -80,10 +112,14 @@ class Div{
 
 // let component = <Parent id = "a" class = "b"></Parent>
 
-var component = create(Div,{
-    id: "a",
-    "class":"b",
-},create(Div,null))
+// var component = create(Div,{
+//     id: "a",
+//     "class":"b",
+// },create(Div,null))
+
+let component = <MyComponent>
+
+</MyComponent>
 
 component.mountTo(document)
 console.log(component)
