@@ -48,7 +48,7 @@ class Wrapper{
     }
 
     mountTo(parent){
-        parent.appendchild(this.root);
+        parent.appendChild(this.root);
         for(let child of this.children){
             child.mountTo(this.root);
         }
@@ -86,7 +86,7 @@ class MyComponent{
         return <article>
             <h1>{this.attributes.get("title")}</h1>
             <header>I'm a header</header>
-            {slot}
+            {this.slot}
             <footer>I'm a header</footer>
         </article>
     }
