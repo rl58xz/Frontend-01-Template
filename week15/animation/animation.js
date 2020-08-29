@@ -14,7 +14,7 @@ export class TimeLine {
                     progression = 1;
                     animation.finished = true;
                 }
-                let value = start + progression * (end - start);
+                let value = animation.valueFromAnimation(progression);
                 console.log(value)
                 object[property] = template(value);
             }
@@ -62,7 +62,7 @@ export class TimeLine {
 }
 
 export class Animation {
-    constructor(object, property, template, start, end, duration, delay, timingFunction) {
+    constructor(object, property, start, end, duration, delay, timingFunction, template) {
         this.object = object;
         this.template = template;
         this.property = property;
@@ -71,6 +71,32 @@ export class Animation {
         this.duration = duration;
         this.delay = delay;
         this.timingFunction = timingFunction;
+    }
+
+    valueFromAnimation(progression){
+        return this.start + progression * (this.end - this.start);
+    }
+}
+
+export class ColorAnimation {
+    constructor(object, property, start, end, duration, delay, timingFunction ,template) {
+        this.object = object;
+        this.template = template || (v => `rgba(${v.r},${v.g},${v.b},${v.a})`);
+        this.property = property;
+        this.start = start;
+        this.end = end;
+        this.duration = duration;
+        this.delay = delay;
+        this.timingFunction = timingFunction;
+    }
+
+    valueFromAnimation(progression){
+        return {
+            r: this.start.r + progression * (this.end.r - this.start.r),
+            g: this.start.g + progression * (this.end.g - this.start.g),
+            b: this.start.b + progression * (this.end.b - this.start.b),
+            a: this.start.a + progression * (this.end.a - this.start.a)
+        }
     }
 }
 
