@@ -1,7 +1,12 @@
 let element = document.body;
 
+let contexts = new Map();
+
+let MOUSE_SYMBOL = Symbol('mouse');
+
 element.addEventListener('mousedown',(event)=>{
-    start(event);
+    contexts[MOUSE_SYMBOL] = Object.create(null);
+    start(event,contexts[MOUSE_SYMBOL]);
     let mousemove = (event)=>{
         move(event);
     }
@@ -40,18 +45,18 @@ element.addEventListener('touchcancel',(event)=>{
     }
 })
 
-let start = (point)=>{
+let start = (point,context)=>{
     console.log(point.clientX,point.clientY)
 }
 
-let move = (point)=>{
+let move = (point,context)=>{
     console.log(point.clientX,point.clientY)
 }
 
-let end = (point)=>{
+let end = (point,context)=>{
     console.log(point.clientX,point.clientY)
 }
 
-let cancel = (point)=>{
+let cancel = (point,context)=>{
     console.log(point.clientX,point.clientY)
 }
