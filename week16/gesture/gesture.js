@@ -73,25 +73,58 @@ let move = (point,context)=>{
 let end = (point,context)=>{
     if(context.isPan){
         context.moves = context.moves.filter(item => Date.now() - item.t < 300);
-        console.log(context.moves);
+
+        if(context.moves.length){
+            let speed = Math.sqrt((point.clientX - context.moves[0].x)**2 + (point.clientY - context.moves[0].y)**2)/300;
+            if(speed > 0.4){
+                let event = new CustomEvent('flick',{
+                    datail:{
+                        x:point.clientX,
+                        y:point.clientY,
+                        target:point
+                    }
+                });
+                document.dispatchEvent(event);
+                return;
+            }
+        }
+
         let event = new CustomEvent('pan',{
             detail:{
                 x:context.startX,
                 y:context.startY,
-                t:Date.now()-context.startTime
+                t:Date.now()-context.startTime,
+                target:point
             }
         });
-        console.log('panend');
+        document.dispatchEvent(event);
     }else if(Date.now() - context.startTime > 500){
         context.isPan = false;
         context.isTap = false;
         context.isPress = true;
     }
+    
     if(context.isPress){
-        console.log('pressend');
+        let event = new CustomEvent('press',{
+            detail:{
+                x:context.startX,
+                y:context.startY,
+                t:Date.now()-context.startTime,
+                target:point
+            }
+        });
+        document.dispatchEvent(event);
     }
     if(context.isTap){
-        console.log('tapend');
+        let event = new CustomEvent('tap',{
+            detail:{
+                x:context.startX,
+                y:context.startY,
+                t:Date.now()-context.startTime,
+                target:point
+            }
+        });
+        document.dispatchEvent(event);
     }
 }
 
