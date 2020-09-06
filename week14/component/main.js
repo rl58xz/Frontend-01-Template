@@ -1,125 +1,71 @@
-// import './foo'
-function create(Cls,arttributes,...children){
-    let o;
-
-    if(typeof Cls === "string"){
-        o = new Wrapper(Cls);
-    }else {
-        o = new Cls({
-            timer:{}
-        });
-    }
-
-    for(let name in arttributes){
-        o.setAttribute(name,arttributes[name]);
-    }
-
-    console.log(children)
-
-    for(let child of children){
-        if(typeof child === "string"){
-            child = new Text(child);
-        }
-        o.appendchild(child);
-    }
-
-    return o;
-}
-
-class Text{
-    constructor(text){
-        this.children = [];
-        this.root = document.createTextNode(text);
-    }
-
-    mountTo(parent){
-        parent.appendchild(this.root);
-    }
-}
-
-class Wrapper{
-    constructor(type){
-        this.children = [];
-        this.root = document.createElement(type);
-    }
-
-    setAttribute(name,value){
-        this.root.setAttribute(name,value);
-    }
-
-    mountTo(parent){
-        parent.appendChild(this.root);
-        for(let child of this.children){
-            child.mountTo(this.root);
-        }
-    }
-    appendchild(child){
-        this.children.push(child);
-    }
-}
-
-class MyComponent{
-    constructor(config){
-        this.children = [];
-        this.attributes = new Map();
-    }
-
-    setAttribute(name,value){
-        this.attributes.set(name,value);
-    }
-
-    mountTo(parent){
-        this.slot = <div></div>
-
-        for(let child of this.children){
-            this.slot.appendchild(child);
-        }
-
-        this.render().mountTo(parent);
-    }
-
-    appendchild(child){
-        this.children.push(child);
-    }
-
-    render(){
-        return <article>
-            <h1>{this.attributes.get("title")}</h1>
-            <header>I'm a header</header>
-            {this.slot}
-            <footer>I'm a header</footer>
-        </article>
-    }
-}
-
-// class Child{
-//     constructor(){
+import { create, Wrapper, Text } from './createElement';
+import {Carousel} from './Carousel'
+// class MyComponent {
+//     constructor(config){
 //         this.children = [];
-//         this.root = document.createElement("div");
 //     }
 
-//     setAttribute(name,value){
-//         this.root.setAttribute(name,value);
+//     setAttribute(name, value) { //attribute
+//         this.root.setAttribute(name, value);
+//     }
+
+//     appendChild(child){
+//         this.children.push(child);
+//     }
+
+//     render(){
+
+//         return <article>
+//             <header>I'm a header</header>
+//             {this.slot}
+//             <footer>I'm a footer</footer>
+//         </article>
 //     }
 
 //     mountTo(parent){
-//         parent.appendchild(this.root)
+//         this.slot = <div></div>
+//         for(let child of this.children){
+//             this.slot.appendChild(child)
+//         }
+//         this.render().mountTo(parent)
+
 //     }
-//     appendchild(child){
-//         child.mountTo(this.root)
-//     }
+
+
 // }
 
-// let component = <Parent id = "a" class = "b"></Parent>
 
-// var component = create(Div,{
-//     id: "a",
-//     "class":"b",
-// },create(Div,null))
+/*let component = <div id="a" cls="b" style="width:100px;height:100px;background-color:lightgreen">
+        <div></div>
+        <p></p>
+        <div></div>
+        <div></div>
+    </div>*/
 
-let component = <MyComponent>
+let component = <Carousel data={
+    [
+        "https://static001.geekbang.org/resource/image/bb/21/bb38fb7c1073eaee1755f81131f11d21.jpg",
+        "https://static001.geekbang.org/resource/image/1b/21/1b809d9a2bdf3ecc481322d7c9223c21.jpg",
+        "https://static001.geekbang.org/resource/image/b6/4f/b6d65b2f12646a9fd6b8cb2b020d754f.jpg",
+        "https://static001.geekbang.org/resource/image/73/e4/730ea9c393def7975deceb48b3eb6fe4.jpg",
+    ]
+}>
+</Carousel>
 
-</MyComponent>
+component.mountTo(document.body);
+/*
+var component = createElement(
+    Parent, 
+    {
+        id: "a",
+        "class": "b"
+    }, 
+    createElement(Child, null), 
+    createElement(Child, null), 
+    createElement(Child, null)
+);
+*/
 
-component.mountTo(document)
-console.log(component)
+console.log(component);
+
+//componet.setAttribute("id", "a");
