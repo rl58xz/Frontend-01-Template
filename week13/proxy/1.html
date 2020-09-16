@@ -1,0 +1,50 @@
+<script>
+    let obj = {
+        a: 1,
+        b: 2
+    };
+
+    let handlers = new Map();
+
+    let usedReactivity = [];
+
+    
+
+
+    function reactive(obj) {
+        return new Proxy(obj, {
+            get(obj, prop) {
+                console.log(prop, obj);
+                return obj[prop];
+            },
+            set(obj,prop,val){
+                obj[prop] = val
+                for (let handler of handlers){
+                    handler();
+                }
+                return obj[prop];
+            },
+            defineProperty(obj, prop, desc) {
+                return Object.defineProperty(obj, prop, desc);
+            }
+        })
+    }
+
+    function effect(handler){
+        console.log(handler);
+        handler();
+        handlers.push(handler);
+    }
+
+    let dumy;
+ 
+    let proxy = reactive(obj);
+
+    effect(() => (dumy = proxy.a))
+
+    console.log(dumy);
+
+    proxy.a = 2;
+
+    console.log(dumy)
+</script>
